@@ -1,19 +1,19 @@
 {
   "domain": "ipmi",
-  "name": "IPMI connector",
+  "name": "IPMI connector (UB)",
   "codeowners": [
-    "@ateodorescu"
+    "@uberiain"
   ],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/ateodorescu/home-assistant-ipmi",
+  "documentation": "https://github.com/uberiain/home-assistant-ipmi",
   "integration_type": "device",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/ateodorescu/home-assistant-ipmi/issues",
+  "issue_tracker": "https://github.com/uberiain/home-assistant-ipmi/issues",
   "requirements": [
     "python-ipmi>=0.5.8"
   ],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "zeroconf": [
     "_ipmi._tcp.local."
   ]
