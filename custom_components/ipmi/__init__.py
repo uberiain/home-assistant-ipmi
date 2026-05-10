@@ -151,7 +151,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             "addon_interface": config.get(CONF_ADDON_INTERFACE),
             "addon_extra_params": config.get(CONF_ADDON_PARAMS),
             CONF_IGNORE_CHECKSUM_ERRORS: config.get(CONF_IGNORE_CHECKSUM_ERRORS, False),
-            "ignore_fru_rc": config.get(CONF_IGNORE_FRU_RC),
+            "ignore_fru_rc": config.get(CONF_IGNORE_FRU_RC, True),
         },
     )
     coordinator = IpmiCoordinator(hass, scan_interval, data)
