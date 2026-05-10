@@ -106,7 +106,7 @@ class IpmiServer:
         self._ignore_checksum_errors = connection_data.get(
             CONF_IGNORE_CHECKSUM_ERRORS, False
         )
-        self._ignore_fru_rc = connection_data.get("ignore_fru_rc") | None = False
+        self._ignore_fru_rc = connection_data.get("ignore_fru_rc")
 
         # when addon runs in dev mode (local web server)
         #         self._addon_url += '/repositories/home-assistant-addons/ipmi-server/rootfs/app/public'
@@ -147,8 +147,7 @@ class IpmiServer:
             if self._addon_extra_params:
                 params["extra"] = self._addon_extra_params
             
-            if self._ignore_fru_rc:
-                params["ignore_fru_rc"] = self._ignore_fru_rc
+            params["ignore_fru_rc"] = self._ignore_fru_rc
             
             params["no_ta"] = "nada"
             
