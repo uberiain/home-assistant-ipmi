@@ -134,7 +134,7 @@ def _base_schema(discovery_info: zeroconf.ZeroconfServiceInfo | None) -> vol.Sch
                 ): _INTERFACE_SELECTOR,
                 vol.Optional(CONF_ADDON_PARAMS): cv.string,
                 vol.Optional(CONF_IGNORE_CHECKSUM_ERRORS, default=False): cv.boolean,
-                vol.Optional(CONF_FRU_RC, default=True):cv.boolean,
+                vol.Optional(CONF_IGNORE_FRU_RC, default=True):cv.boolean,
             }
         )
 
