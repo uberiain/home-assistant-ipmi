@@ -149,8 +149,6 @@ class IpmiServer:
             
             params["ignore_fru_rc"] = self._ignore_fru_rc
             
-            params["no_ta"] = "nada"
-            
             url = self._addon_url
 
             if path is not None:
