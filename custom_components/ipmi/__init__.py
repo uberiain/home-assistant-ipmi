@@ -19,10 +19,6 @@ from dataclasses import dataclass
 from datetime import timedelta
 import logging
 from typing import cast
-import pyipmi
-import pyipmi.interfaces
-from pyipmi.errors import IpmiConnectionError
-import pyipmi.sensor
 import re
 from homeassistant.helpers.typing import ConfigType
 

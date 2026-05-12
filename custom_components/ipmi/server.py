@@ -6,10 +6,6 @@ from dataclasses import dataclass
 from datetime import timedelta
 import logging
 from typing import Any, Mapping, cast
-import pyipmi
-import pyipmi.interfaces
-from pyipmi.errors import IpmiConnectionError
-import pyipmi.sensor
 import re
 
 from homeassistant.core import HomeAssistant
@@ -170,135 +166,6 @@ class IpmiServer:
 
         return id
 
-    def getFromRmcp(self):
-        try:
-            json = {
-                "device": {},
-                "sensors": {
-                    "temperature": {},
-                    "voltage": {},
-                    "fan": {},
-                    "power": {},
-                    "current": {},
-                    "time": {},
-                },
-                "states": {},
-                "power_on": False,
-            }
-            ipmi = self.connect()
-
-            inv = ipmi.get_fru_inventory(ignore_checksum=self._ignore_checksum_errors)
-
-            device_id = ipmi.get_device_id()
-
-            try:
-                inv = ipmi.get_fru_inventory(
-                    ignore_checksum=self._ignore_checksum_errors
-                )
-                json["device"]["manufacturer_name"] = (
-                    inv.product_info_area.manufacturer.string
-                )
-                json["device"]["product_name"] = inv.board_info_area.product_name.string
-            except Exception as err:  # pylint: disable=broad-except
-                _LOGGER.warning("Error getting FRU Inventory Device")
-                json["device"]["manufacturer_name"] = "None"
-                json["device"]["product_name"] = "None"
-
-            json["device"]["firmware_revision"] = (
-                device_id.fw_revision.version_to_string()
-            )
-            json["device"]["product_id"] = device_id.product_id
-            json["power_on"] = ipmi.get_chassis_status().power_on
-
-            iter_fct = None
-
-            if device_id.supports_function("sdr_repository"):
-                iter_fct = ipmi.sdr_repository_entries
-            elif device_id.supports_function("sensor"):
-                iter_fct = ipmi.device_sdr_entries
-
-            for s in iter_fct():
-                name = getattr(s, "device_id_string", None)
-                if name:
-                    id_string = self.generateId(name)
-                else:
-                    id_string = name
-
-                sensor_type = getattr(s, "sensor_type_code", None)
-                value = None
-
-                try:
-                    if s.type is pyipmi.sdr.SDR_TYPE_FULL_SENSOR_RECORD:
-                        (value, states) = ipmi.get_sensor_reading(s.number)
-                        if value is not None:
-                            value = s.convert_sensor_raw_to_value(value)
-
-                    elif s.type is pyipmi.sdr.SDR_TYPE_COMPACT_SENSOR_RECORD:
-                        (value, states) = ipmi.get_sensor_reading(s.number)
-
-                except pyipmi.errors.CompletionCodeError as e:
-                    if s.type in (
-                        pyipmi.sdr.SDR_TYPE_COMPACT_SENSOR_RECORD,
-                        pyipmi.sdr.SDR_TYPE_FULL_SENSOR_RECORD,
-                    ):
-                        _LOGGER.debug(
-                            "0x{:04x} | {:3d} | {:18s} | ERR: CC=0x{:02x}".format(
-                                s.id, s.number, s.device_id_string, e.cc
-                            )
-                        )
-
-                if sensor_type == pyipmi.sensor.SENSOR_TYPE_TEMPERATURE:
-                    json["sensors"]["temperature"][id_string] = name
-                    json["states"][id_string] = value
-
-                elif sensor_type == pyipmi.sensor.SENSOR_TYPE_FAN:
-                    json["sensors"]["fan"][id_string] = name
-                    json["states"][id_string] = value
-
-                elif sensor_type == pyipmi.sensor.SENSOR_TYPE_VOLTAGE:
-                    json["sensors"]["voltage"][id_string] = name
-                    json["states"][id_string] = value
-
-            ipmi.close()
-
-        # except (IpmiConnectionError, ConnectionResetError) as err:
-        except Exception as err:  # pylint: disable=broad-except
-            _LOGGER.debug("Error connecting to IPMI server %s: %s", self._host, err)
-            json = None
-
-        return json
-
-    def runRmcpCommand(self, command: int):
-        try:
-            ipmi = self.connect()
-            ipmi.chassis_control(command)
-            ipmi.close()
-        except Exception as err:  # pylint: disable=broad-except
-            _LOGGER.error("Error connecting to IPMI server %s: %s", self._host, err)
-
-    def connect(self) -> pyipmi.Ipmi:
-        interface = pyipmi.interfaces.create_interface(
-            "rmcp", slave_address=0x81, host_target_address=0x20, keep_alive_interval=0
-        )
-        ipmi = pyipmi.create_connection(interface)
-        ipmi.session.set_session_type_rmcp(self._host, self._port)
-        ipmi.session.set_auth_type_user(self._username, self._password)
-
-        # Note: python-ipmi library does not support Kg keys - only ipmi-server addon supports this
-        if self._kg_key:
-            _LOGGER.warning(
-                "Kg key specified but python-ipmi library does not support Kg key authentication. Kg key will be ignored. Consider using the ipmi-server addon for full feature support."
-            )
-
-        # Set privilege level if provided
-        if self._privilege_level:
-            ipmi.session.set_priv_level(self._privilege_level)
-
-        ipmi.open()
-        ipmi.target = pyipmi.Target(ipmb_address=0x20)
-
-        return ipmi
-
     def update(self) -> None:
         info = None
 
@@ -309,7 +176,7 @@ class IpmiServer:
                 _LOGGER.error(json["message"])
                 json = None
         else:
-            json = self.getFromRmcp()
+            _LOGGER.error( "Addon not available, cannot update IPMI data")
 
         if json is not None:
             info = IpmiDeviceInfo()
@@ -355,33 +222,28 @@ class IpmiServer:
 
     def power_on(self) -> None:
         json = self.getFromAddon("power_on")
-
         if json is None:
-            self.runRmcpCommand(pyipmi.chassis.CONTROL_POWER_UP)
+            _LOGGER.error( "Addon not available 1 cannot execute power_on")
 
     def power_off(self) -> None:
         json = self.getFromAddon("power_off")
-
         if json is None:
-            self.runRmcpCommand(pyipmi.chassis.CONTROL_POWER_DOWN)
+            _LOGGER.error( "Addon net available, cannot execute power_off")
 
     def power_cycle(self) -> None:
         json = self.getFromAddon("power_cycle")
-
         if json is None:
-            self.runRmcpCommand(pyipmi.chassis.CONTROL_POWER_CYCLE)
+            _LOGGER.error( "Addon not available, cannot execute power_cycle")
 
     def power_reset(self) -> None:
         json = self.getFromAddon("power_reset")
-
         if json is None:
-            self.runRmcpCommand(pyipmi.chassis.CONTROL_HARD_RESET)
+            _LOGGER.error( 11Addon net available 1 cannot execute power_reset")
 
     def soft_shutdown(self) -> None:
         json = self.getFromAddon("soft_shutdown")
-
         if json is None:
-            self.runRmcpCommand(pyipmi.chassis.CONTROL_SOFT_SHUTDOWN)
+            _LOGGER.error("Addon not available, cannot execute soft shutdown")
 
     def send_command(self, command: str, ignore_errors: bool) -> str:
         cmd = command.replace("$host$", self._host)
