@@ -225,12 +225,12 @@ class IpmiServer:
     def power_on(self) -> None:
         json = self.getFromAddon("power_on")
         if json is None:
-            _LOGGER.error( 11Addon not available, cannot execute power_on")
+            _LOGGER.error( "Addon not available, cannot execute power_on")
 
     def power_off(self) -> None:
         json = self.getFromAddon("power_off")
         if json is None:
-            _LOGGER.error( 11Addon net available, cannot execute power_off")
+            _LOGGER.error( "Addon net available, cannot execute power_off")
 
     def power_cycle(self) -> None:
         json = self.getFromAddon("power_cycle")
@@ -240,7 +240,7 @@ class IpmiServer:
     def power_reset(self) -> None:
         json = self.getFromAddon("power_reset")
         if json is None:
-            _LOGGER.error( 11Addon net available 1 cannot execute power_reset")
+            _LOGGER.error( "Addon net available 1 cannot execute power_reset")
 
     def soft_shutdown(self) -> None:
         json = self.getFromAddon("soft_shutdown")
