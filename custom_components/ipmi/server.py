@@ -238,7 +238,7 @@ class IpmiServer:
     def power_reset(self) -> None:
         json = self.getFromAddon("power_reset")
         if json is None:
-            _LOGGER.error( 11Addon net available 1 cannot execute power_reset")
+            _LOGGER.error( "Addon net available 1 cannot execute power_reset")
 
     def soft_shutdown(self) -> None:
         json = self.getFromAddon("soft_shutdown")
