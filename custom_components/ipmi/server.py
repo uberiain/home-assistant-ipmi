@@ -62,7 +62,7 @@ class IpmiDeviceInfo:
     """Device information for the IPMI server."""
 
     device: dict[str, str] = None
-    power_on: False
+    power_on: bool | False = False
     sensors: dict[str, str] = None
     states: dict[str, str] = None
     alias: str = None
