@@ -152,7 +152,7 @@ class IpmiServer:
 
             _LOGGER.debug(url)
             _LOGGER.debug(params)
-            ipmi = requests.get(url, params=params)
+            ipmi = requests.get(url, params=params, timeout=DEFAULT_TIMEOUT)
             response = ipmi.json()
         except Exception as err:  # pylint: disable=broad-except
             _LOGGER.debug(err)

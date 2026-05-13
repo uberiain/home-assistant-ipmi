@@ -37,7 +37,6 @@ KEY_STATUS = "status"
 
 COORDINATOR = "coordinator"
 DEFAULT_SCAN_INTERVAL = 60
-# DEFAULT_SCAN_INTERVAL = 10
 SERVERS = "servers"
 DISPATCHERS = "dispatchers"
 
