@@ -1,4 +1,7 @@
-# IPMI connector for Home Assistant
+# IPMI connector (UB) for Home Assistant
+
+This connector is based on the work of https://github.com/ateodorescu/home-assistant-ipmi adding
+test for FRU rc ) Problem with my AsRockRack systems.
 
 ## What is IPMI?
 IPMI (Intelligent Platform Management Interface) is a set of standardized specifications for
@@ -6,19 +9,12 @@ hardware-based platform management systems that makes it possible to control and
 
 ## Home Assistant integration
 This integration allows you to monitor and control servers that support IPMI.
-It can connect to your servers in three ways:
+It can connect to your servers in two ways:
 - via the `ipmi-server` addon from [here](https://github.com/ateodorescu/home-assistant-addons) which is
-    basically a wrapper for `ipmitool`.
+	basically a wrapper for `ipmitool`.
 - via the `ipmi-server-standalone` docker container.
-    
-        docker pull ghcr.io/ateodorescu/ipmi-server-standalone:latest
-
-- via the Python library [python-ipmi](https://github.com/kontron/python-ipmi)
-which hasn't been tested with all servers.
-
-
-If the `ipmi-server` addon is installed and started then this will be primarily used,
-and then it will fall back to the Python library if the addon is not reachable.
+	
+		docker pull ghcr.io/ateodorescu/ipmi-server-standalone:latest
 
 ## Installation
 Install it via HACS or just copy the `custom_components` folder in your home assistant `config` folder.
@@ -32,7 +28,7 @@ The following `sensors` will be added:
 - all temperature sensors
 - all fan sensors
 - all voltage sensors
-- all power sensors (the Python library can't extract these)
+- all power sensors
 
 The following `actions` are added:
 - power on

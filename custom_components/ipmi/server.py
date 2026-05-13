@@ -62,7 +62,7 @@ class IpmiDeviceInfo:
     """Device information for the IPMI server."""
 
     device: dict[str, str] = None
-    power_on: bool | False = False
+    power_on: False
     sensors: dict[str, str] = None
     states: dict[str, str] = None
     alias: str = None
@@ -191,8 +191,6 @@ class IpmiServer:
 
         if info is not None:
             new_sensors = []
-            # _LOGGER.critical(repr(info))
-            # _LOGGER.critical(self._known_sensors)
 
             if len(info.states) == 0:
                 self._known_sensors.clear()
@@ -228,7 +226,7 @@ class IpmiServer:
     def power_off(self) -> None:
         json = self.getFromAddon("power_off")
         if json is None:
-            _LOGGER.error( "Addon net available, cannot execute power_off")
+            _LOGGER.error( "Addon not available, cannot execute power_off")
 
     def power_cycle(self) -> None:
         json = self.getFromAddon("power_cycle")
@@ -238,7 +236,7 @@ class IpmiServer:
     def power_reset(self) -> None:
         json = self.getFromAddon("power_reset")
         if json is None:
-            _LOGGER.error( "Addon net available 1 cannot execute power_reset")
+            _LOGGER.error( "Addon not available 1 cannot execute power_reset")
 
     def soft_shutdown(self) -> None:
         json = self.getFromAddon("soft_shutdown")
