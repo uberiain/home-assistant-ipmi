@@ -9,12 +9,10 @@ hardware-based platform management systems that makes it possible to control and
 
 ## Home Assistant integration
 This integration allows you to monitor and control servers that support IPMI.
-It can connect to your servers in two ways:
-- via the `ipmi-server` addon from [here](https://github.com/ateodorescu/home-assistant-addons) which is
+It can connect to your servers in this way:
+
+- via the `ipmi-server` addon from [here](https://github.com/uberiain/ipmi-addon) which is
 	basically a wrapper for `ipmitool`.
-- via the `ipmi-server-standalone` docker container.
-	
-		docker pull ghcr.io/ateodorescu/ipmi-server-standalone:latest
 
 ## Installation
 Install it via HACS or just copy the `custom_components` folder in your home assistant `config` folder.
